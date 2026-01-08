@@ -4,16 +4,15 @@ using UnityEngine;
 
 public class PipeMovement : MonoBehaviour
 {
-    public float speed = 2f;
-    private float limitX = -10f;
+    public float despawnZ = -10f;
+    public Transform player;
 
     void Update()
     {
-        transform.position += Vector3.left * speed * Time.deltaTime;
-
-        if (transform.position.x < limitX)
+        if (transform.position.z < player.position.z + despawnZ)
         {
             gameObject.SetActive(false);
+            PipeSpawner.instance.GetPipe();
         }
     }
 }

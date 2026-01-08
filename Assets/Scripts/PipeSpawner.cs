@@ -4,48 +4,70 @@ using UnityEngine;
 
 public class PipeSpawner : MonoBehaviour
 {
+    public static PipeSpawner instance;
+
     public GameObject pipePrefab;
+    public Transform player;
+
     public int poolSize = 5;
-    public float spawnX = 10f;
-    public float distanceBetweenPipes = 5f;
+    public float forwardOffset = 20f;
+    public float distanceBetweenPipes = 6f;
     public float minY = -2f;
     public float maxY = 2f;
 
-    private List<GameObject> pipePool;
-    private int currentPipeIndex = 0;
+    private List<GameObject> pool;
+    private float nextSpawnZ;
 
-    void Start()
+    void Awake()
     {
-        pipePool = new List<GameObject>();
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+
+        pool = new List<GameObject>();
 
         for (int i = 0; i < poolSize; i++)
         {
             GameObject pipe = Instantiate(pipePrefab);
-            pipe.SetActive(false);
-            pipePool.Add(pipe);
-        }
-
-        // Activar todas al inicio
-        for (int i = 0; i < poolSize; i++)
-        {
-            SpawnPipe();
+            pipe.SetActive(false);   //  SIEMPRE false
+            pool.Add(pipe);
         }
     }
 
-    void SpawnPipe()
+    void Start()
     {
-        GameObject pipe = pipePool[currentPipeIndex];
+        nextSpawnZ = player.position.z + forwardOffset;
 
-        float randomY = Random.Range(minY, maxY);
-        pipe.transform.position = new Vector3(spawnX, randomY, 0);
-        pipe.SetActive(true);
-
-        spawnX += distanceBetweenPipes;
-
-        currentPipeIndex++;
-        if (currentPipeIndex >= poolSize)
+        // Spawnea las primeras tuberías
+        for (int i = 0; i < poolSize; i++)
         {
-            currentPipeIndex = 0;
+            GetPipe();
         }
+    }
+
+    public GameObject GetPipe()
+    {
+        foreach (GameObject pipe in pool)
+        {
+            if (!pipe.activeInHierarchy)
+            {
+                float randomY = Random.Range(minY, maxY);
+
+                //  POSICIONAR PRIMERO
+                pipe.transform.position = new Vector3(
+                    player.position.x,
+                    randomY,
+                    nextSpawnZ
+                );
+
+                //  ACTIVAR DESPUÉS
+                pipe.SetActive(true);
+
+                nextSpawnZ += distanceBetweenPipes;
+                return pipe;
+            }
+        }
+        return null;
     }
 }
