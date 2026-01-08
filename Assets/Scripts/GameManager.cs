@@ -1,20 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public Text scoreText;
-    private int score = 0;
+    public static GameManager Instance;
+    public int score = 0;
 
     void Awake()
     {
-        instance = this;
+        Instance = this;
     }
 
-    public void AddScore()
+    public void AddPoints(int points)
     {
-        score++;
-        scoreText.text = score.ToString();
+        score += points;
     }
-}
+}  
